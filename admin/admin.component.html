@@ -1,0 +1,84 @@
+<nz-layout>
+  <nz-row class="header" [nzAlign]="'middle'">
+    <nz-col>
+      <h1 nz-typography>Адміністрування</h1>
+    </nz-col>
+  </nz-row>
+  <nz-content>
+    <nz-spin [nzSpinning]=isLoading nzTip="Завантажую...">
+
+      <nz-input-group>
+        <input nz-input [(ngModel)]=searchValue type="text"
+               placeholder="Ім'я користувача / Логін">
+      </nz-input-group>
+
+      <ng-container *ngFor="let user of liveSearch(searchValue); let i = index">
+        <form *ngIf=!isLoading&&!errorLoading [formGroup]="forms[i]" nz-form>
+          <nz-collapse>
+            <nz-collapse-panel [nzHeader]="userHeader">
+              <nz-table #structuresTable
+                        [nzData]="forms[i].get('patientStructures')['controls']"
+                        nzShowPagination="false"
+                        nzBordered="true"
+                        nzPageSize="50"
+                        nzSize="small">
+                <thead>
+                <tr>
+                  <th nzWidth="30px">№</th>
+                  <th>Підрозділ</th>
+                  <th [nzAlign]="'center'" *ngFor="let access of user['structures'][0]['accesses']">{{access.name}}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let structure of structuresTable.data; let i = index">
+                  <td>{{i + 1}}</td>
+                  <td>{{structure.value.name.value}}</td>
+                  <td [nzAlign]="'center'"
+                      *ngFor="let access of structure.value['accesses']['controls']; let i = index">
+                    <label nz-checkbox [formControl]="access.value.status"></label>
+                  </td>
+                </tr>
+                <tr>
+                  <td>All</td>
+                  <td>Всі підрозділи</td>
+                  <td [nzAlign]="'center'"><label nz-checkbox></label></td>
+                  <td [nzAlign]="'center'"><label nz-checkbox></label></td>
+                  <td [nzAlign]="'center'"><label nz-checkbox></label></td>
+                  <td [nzAlign]="'center'"><label nz-checkbox></label></td>
+                </tr>
+                </tbody>
+              </nz-table>
+              <ng-template #userHeader>
+                <div nz-row>
+                  <div nz-col>
+                    <nz-tag [nzColor]="'red'">{{i + 1}}</nz-tag>
+                  </div>
+                  <div nz-col>
+                    <nz-divider nzType="vertical"></nz-divider>
+                  </div>
+                  <div nz-col nzLg="4">
+                    <nz-tag [nzColor]="'green'">{{user.name}}</nz-tag>
+                  </div>
+                  <div nz-col>
+                    <nz-divider nzType="vertical"></nz-divider>
+                  </div>
+                  <div nz-col nzLg="3">
+                    <nz-tag [nzColor]="'blue'">{{user.login}}</nz-tag>
+                  </div>
+                </div>
+              </ng-template>
+            </nz-collapse-panel>
+          </nz-collapse>
+        </form>
+        <button *ngIf="1" class="button-edit" nz-button nzType="primary" [nzSize]="'default'" nzShape="round"><i
+          nz-icon nzType="edit" (click)="disableForm(i)"></i>Редагувати
+        </button>
+        <button *ngIf="1" class="button-edit" nz-button nzType="primary" [nzSize]="'default'" nzShape="round"><i
+          nz-icon nzType="save"></i>Зберегти
+        </button>
+      </ng-container>
+
+    </nz-spin>
+  </nz-content>
+  <nz-footer>Designed by SIT</nz-footer>
+</nz-layout>
